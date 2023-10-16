@@ -35,6 +35,10 @@ export class Question extends Entity<QuestionProps> {
     return this.props.content;
   }
 
+  get slug() {
+    return this.props.slug;
+  }
+
   get createdAt() {
     return this.props.createdAt;
   }

@@ -273,3 +273,12 @@ export class Entity<T> {
 
    ```
 ## Forum with DDD and clean architecture
+
+### Clean architecture fundamentals
+
+- Layers
+    - 1st -> infrastucture -> web, ui, db
+    - 2nd -> adapters and interfaces -> converts and protect values that comes from infrastucture into the most internal layers
+    - 3rd -> use cases
+    - 4th -> entities
+- External to internal. External layer may dependen on internal one, but not the oppsoite
