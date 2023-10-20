@@ -17,7 +17,8 @@
       }
     ],
     "no-useless-constructor": "off",
-    "@typescript-eslint/adjacent-overload-signatures": "off"
+    "@typescript-eslint/adjacent-overload-signatures": "off",
+    "@typescript-eslint/no-empty-interface": "off"
   },
   "env": {
     "vitest-globals/env": "true"
