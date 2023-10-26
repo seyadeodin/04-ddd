@@ -13,14 +13,20 @@ describe('Create question', () => {
   });
 
   it('should be able to create a question', async () => {
-    const { question } = await sut.execute({
+    const result = await sut.execute({
       authorId: '1',
       title: 'Título',
       content: 'Nova Pergunta',
     });
 
-    expect(question.id).toBeInstanceOf(UniqueEntityId);
-    expect(question.content).toEqual('Nova Pergunta');
-    expect(question.title).toEqual('Título');
+    if (result.isLeft()) {
+      expect(1).toBe(2);
+      return;
+    }
+
+    expect(result.isRight()).toBe(true);
+    expect(result.value.question.id).toBeInstanceOf(UniqueEntityId);
+    expect(result.value.question.content).toEqual('Nova Pergunta');
+    expect(result.value.question.title).toEqual('Título');
   });
 });

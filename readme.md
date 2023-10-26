@@ -282,3 +282,105 @@ export class Entity<T> {
     - 3rd -> use cases
     - 4th -> entities
 - External to internal. External layer may dependen on internal one, but not the oppsoite
+- What does it mean? We create a bunch of new folders:
+    - Core
+        - Entities
+        - Errors
+        - Repostitories
+        - Types
+    - Domain
+        - Subdomain
+            - Application
+                - Repositories
+                - Use-cases
+            - Enterprise
+                - Entities
+
+# Factories
+- Factories as the name imply are a way of producing instances of our classes autoomatically. Here using the library faker to fill our fields we do just that.
+- On [./test/factories/make-answer-comment.ts]
+```tsx
+import { faker } from '@faker-js/faker';
+import {
+  QuestionComment,
+  QuestionCommentProps,
+} from '@/domain/forum/enterprise/entities/question-comment';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+
+export function makeQuestionComment(override: Partial<QuestionCommentProps>) {
+  const questionComment = QuestionComment.create({
+    questionId: new UniqueEntityId(),
+    authorId: new UniqueEntityId(),
+    content: faker.lorem.text(),
+    ...override,
+  });
+
+  return questionComment;
+}
+
+```
+
+# Functional Error Handling
+- To handle the errors in our applicaiton instead of simly throwing them we'll use a functional programming approach. 
+- For that we use the class Either which will signal our application will return either Left, an error or Right which is its the intended flow.
+- In our classes we have the methods isRight and isWrong which can be invoked to signal the type of our result. It aso transform its vaue on either right or eft.
+- Besides that we aso export two functions that will basically transform our result in either a right or a left.
+- So basically, by sharing the same methods and types our classes Left and Right can be used interchangably, and when a specifc one is needed we have our methods isRight and isLeft which signals if Either is Right and Left depending of its return.
+    ```tsx
+    export class Left<L, R> {
+      readonly value: L;
+
+      constructor(value: L) {
+        this.value = value;
+      }
+
+      isRight(): this is Right<L, R> {
+        return false;
+      }
+
+      isLeft(): this is Left<L, R> {
+        return true;
+      }
+    }
+
+    export class Right<L, R> {
+      readonly value: R;
+
+      constructor(value: R) {
+        this.value = value;
+      }
+
+      isRight(): this is Right<L, R> {
+        return true;
+      }
+
+      isLeft(): this is Left<L, R> {
+        return false;
+      }
+    }
+
+    export type Either<L, R> = Left<L, R> | Right<L, R>;
+
+    export const left = <L, R>(value: L): Either<L, R> => {
+      return new Left(value);
+    };
+
+    export const right = <L, R>(value: R): Either<L, R> => {
+      return new Right(value);
+    };
+
+    ```
+# Aggreates and Watched Lists
+- Aggreagate -> A set of entities which are manpipualted in conjunction
+    - Can do things ismple entities can't do
+    -  Example
+        - Order -> OrderItem[]
+        - Order -> Shipping
+- WatchedList
+    - Example
+        - Question -> Attachment[]
+        - On creation: Create questions -> select attachments
+        - On edition: Edit question -> edit attachments
+            - Attachments can be added, removed, updated
+    - WatchedList is a pattern help us identify which was added, removed or edited
+- These two concepts will help us work with relationships.

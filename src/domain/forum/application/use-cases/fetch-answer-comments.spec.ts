@@ -26,12 +26,13 @@ describe('Fetch answer comments', () => {
       }),
     );
 
-    const { answerComments } = await sut.execute({
+    const result = await sut.execute({
       page: 1,
       answerId: 'answer-id',
     });
 
-    expect(answerComments).toEqual([
+    expect(result.isRight()).toBe(true);
+    expect(result.value?.answerComments).toEqual([
       expect.objectContaining({ answerId: { value: 'answer-id' } }),
       expect.objectContaining({ answerId: { value: 'answer-id' } }),
     ]);
@@ -43,11 +44,12 @@ describe('Fetch answer comments', () => {
       );
     }
 
-    const { answerComments } = await sut.execute({
+    const result = await sut.execute({
       page: 2,
       answerId: 'answer-id',
     });
 
-    expect(answerComments).toHaveLength(2);
+    expect(result.isRight()).toBe(true);
+    expect(result.value?.answerComments).toHaveLength(2);
   });
 });

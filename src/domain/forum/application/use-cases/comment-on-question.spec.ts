@@ -17,21 +17,26 @@ describe('Comment on question', () => {
       inMemoryQuestionCommentsRepository,
       inMemoryQuestionsRepository,
     );
-    // system under test
   });
 
   it('should be able to comment on question', async () => {
     const question = makeQuestion({});
     await inMemoryQuestionsRepository.create(question);
 
-    const { questionComment } = await sut.execute({
+    const result = await sut.execute({
       authorId: '1',
       questionId: question.id.toString(),
       content: 'Comentário teste',
     });
 
+    if (result.isLeft()) {
+      expect(1).toBe(2);
+      return;
+    }
+
     expect(inMemoryQuestionCommentsRepository.items[0]);
-    expect(questionComment.id).toBeInstanceOf(UniqueEntityId);
-    expect(questionComment.content).toEqual('Comentário teste');
+    expect(result.isRight()).toBe(true);
+    expect(result.value.questionComment.id).toBeInstanceOf(UniqueEntityId);
+    expect(result.value.questionComment.content).toEqual('Comentário teste');
   });
 });

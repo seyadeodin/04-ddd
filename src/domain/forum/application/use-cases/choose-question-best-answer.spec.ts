@@ -3,6 +3,7 @@ import { makeQuestion } from 'test/factories/make-question';
 import { ChooseQuestionBestAnswerUseCase } from './choose-question-best-answer';
 import { InMemoryAnswersRepository } from 'test/repositories/in-memory-answers-repository';
 import { makeAnswer } from 'test/factories/make-answer';
+import { NotAllowedError } from './errors/not-allowed-error';
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository;
 let inMemoryAnswersRepository: InMemoryAnswersRepository;
@@ -42,12 +43,12 @@ describe('Edit question', () => {
     inMemoryQuestionsRepository.create(question);
     inMemoryAnswersRepository.create(answer);
 
-    await expect(
-      async () =>
-        await sut.execute({
-          answerId: answer.id.toString(),
-          authorId: 'another-author-id',
-        }),
-    ).rejects.toBeInstanceOf(Error);
+    const result = await sut.execute({
+      answerId: answer.id.toString(),
+      authorId: 'another-author-id',
+    });
+
+    expect(result.isLeft).toBeTruthy();
+    expect(result.value).toBeInstanceOf(NotAllowedError);
   });
 });

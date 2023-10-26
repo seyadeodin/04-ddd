@@ -23,14 +23,20 @@ describe('Comment on answer', () => {
     const answer = makeAnswer({});
     await inMemoryAnswersRepository.create(answer);
 
-    const { answerComment } = await sut.execute({
+    const result = await sut.execute({
       authorId: '1',
       answerId: answer.id.toString(),
       content: 'Comentário teste',
     });
 
+    if (result.isLeft()) {
+      expect(1).toBe(2);
+      return;
+    }
+
     expect(inMemoryAnswerCommentsRepository.items[0]);
-    expect(answerComment.id).toBeInstanceOf(UniqueEntityId);
-    expect(answerComment.content).toEqual('Comentário teste');
+    expect(result.isRight()).toBe(true);
+    expect(result.value.answerComment.id).toBeInstanceOf(UniqueEntityId);
+    expect(result.value.answerComment.content).toEqual('Comentário teste');
   });
 });

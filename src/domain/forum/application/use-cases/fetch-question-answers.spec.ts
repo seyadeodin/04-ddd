@@ -23,12 +23,18 @@ describe('Fetch recent questions', () => {
       makeAnswer({ questionId: new UniqueEntityId('other-question-id') }),
     );
 
-    const { answers } = await sut.execute({
+    const result = await sut.execute({
       page: 1,
       questionId: 'question-id',
     });
 
-    expect(answers).toEqual([
+    if (result.isLeft()) {
+      expect(1).toBe(2);
+      return;
+    }
+
+    expect(result.isRight()).toEqual(true);
+    expect(result.value.answers).toEqual([
       expect.objectContaining({ questionId: { value: 'question-id' } }),
       expect.objectContaining({ questionId: { value: 'question-id' } }),
     ]);
@@ -40,11 +46,16 @@ describe('Fetch recent questions', () => {
       );
     }
 
-    const { answers } = await sut.execute({
+    const result = await sut.execute({
       page: 2,
       questionId: 'question-id',
     });
 
-    expect(answers).toHaveLength(2);
+    if (result.isLeft()) {
+      expect(1).toBe(2);
+      return;
+    }
+
+    expect(result.value.answers).toHaveLength(2);
   });
 });
